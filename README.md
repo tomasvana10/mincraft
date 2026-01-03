@@ -22,9 +22,11 @@ Options:
   --auth <AUTH>                 Account authentication method (default: "microsoft")
   --no-log-messages             Do not log messages your client receives
   --verbose                     Enable additional logging messages
+  --exec <COMMANDS>             Execute REPL commands on startup with optional millisecond-based delays, e.g. "{{1000}}.li{{2000}}\nhello{{500}}\n.lo". (default: [])
   -h, --help                    display help for command
 
 Examples:
 $ mincraft mc.hypixel.net 1.21.4 --ign FuriousDestroyer --email you@example.com
 $ mincraft mythic.gg 1.7.10 -p 58585 --ign MangoSyrup --email you@example.com --prox proxy.com:1234:mango:secret
+$ mincraft mc.hypixel.net 1.21.4 --ign Player --email you@example.com --exec "{{1000}}.li{{2000}}\nhello{{500}}\n.lo --verbose"
 ```
