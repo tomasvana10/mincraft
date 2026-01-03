@@ -66,7 +66,19 @@ program
 // extra options
 program
 	.option("--no-log-messages", "Do not log messages your client receives")
-	.option("--verbose", "Enable additional logging messages");
+	.option("--verbose", "Enable additional logging messages")
+	.option(
+		"--exec <COMMANDS>",
+		'Execute REPL commands on startup, e.g. ".li\\nhello\\n.lo".',
+		(val: string, prev: string[]) => prev.concat(val),
+		[],
+	)
+	.option(
+		"--exec-delay <DELAY>",
+		"Timeout between exec commands in milliseconds",
+		(val) => parseInt(val, 10),
+		4000,
+	);
 
 program.action(async (_host, _version, options) => {
 	if (!options.ign && !options.uuid) {
@@ -83,7 +95,16 @@ program.action(async (_host, _version, options) => {
 	}
 
 	const config = await getConfig(program);
-	await run(config);
+
+	const commands: string[] = [];
+	for (const cmd of options.exec) {
+		commands.push(...cmd.split("\\n").filter(Boolean));
+	}
+	await run(
+		config,
+		commands.length > 0 ? commands : undefined,
+		commands.length > 0 ? options.execDelay : undefined,
+	);
 });
 
 async function getIGN(uuid: string) {

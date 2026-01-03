@@ -15,7 +15,7 @@ function isCommand(value: string) {
 	return Object.values(BotCommand).some((cmd) => value.startsWith(cmd));
 }
 
-export async function run(config: Config) {
+export async function run(config: Config, commands?: string[], commandExecDelay?: number) {
 	let bot: BotClient | null = null;
 
 	const rl = readline.createInterface({
@@ -30,22 +30,23 @@ export async function run(config: Config) {
 	const handleInput = async (input: string) => {
 		input = input.trim();
 
+		if (!input) {
+			return false;
+		}
+
 		if (!isCommand(input) && !bot?.isLoggedIn) {
 			logger.raw("log in using .li before sending messages");
-			rl.prompt();
-			return;
+			return false;
 		}
 
 		if (isCommand(input)) {
 			const [cmd, ...args] = input.split(" ");
-			let exit = false;
 
 			switch (cmd) {
 				case BotCommand.Exit: {
 					bot?.disconnect();
 					rl.close();
-					exit = true;
-					break;
+					return true;
 				}
 				case BotCommand.Login: {
 					if (bot?.isLoggedIn) {
@@ -76,24 +77,25 @@ export async function run(config: Config) {
 					}
 					const mineflayer = bot.bot;
 					if (mineflayer) {
-						logger.log(`loading macro: ${filepath}`);
-						await loadAndRunMacro(filepath, { bot: mineflayer, logger });
+						await loadAndRunMacro(filepath, mineflayer, rl);
 					}
 					break;
 				}
-			}
-
-			if (exit) {
-				process.exit(0);
 			}
 		} else {
 			bot?.sendMessage(input);
 		}
 
-		rl.prompt();
+		return false;
 	};
 
-	rl.on("line", handleInput);
+	rl.on("line", async (input) => {
+		const shouldExit = await handleInput(input);
+		if (shouldExit) {
+			process.exit(0);
+		}
+		rl.prompt();
+	});
 
 	console.log("=== mincraft REPL ===");
 	console.log("input plain text to send a message to the server");
@@ -101,6 +103,17 @@ export async function run(config: Config) {
 	console.log(`input .lo to log out from ${config.server.host}`);
 	console.log("input .macro <filepath> to run a macro");
 	console.log("input .exit to exit the REPL");
+
+	if (commands && commands.length > 0) {
+		for (const cmd of commands) {
+			logger.raw(`> ${cmd}`);
+			const shouldExit = await handleInput(cmd);
+			if (shouldExit) {
+				process.exit(0);
+			}
+			await new Promise((resolve) => setTimeout(resolve, commandExecDelay));
+		}
+	}
 
 	rl.prompt();
 }
