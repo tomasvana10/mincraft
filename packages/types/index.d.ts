@@ -48,3 +48,7 @@ export interface Config {
 		verboseLogging: boolean;
 	};
 }
+
+export type DelayableCommand = { command: string; delay: number };
+
+export type DelayableCommands = DelayableCommand[];

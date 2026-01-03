@@ -1,6 +1,10 @@
-import type { Config, ProxyCredentials } from "@mincraft/types";
+import type {
+	Config,
+	DelayableCommands,
+	ProxyCredentials,
+} from "@mincraft/types";
 import { type Command, Option, program } from "commander";
-import { run } from "./runner";
+import { run } from "./repl";
 
 // meta
 program
@@ -13,6 +17,7 @@ program
 Examples:
 $ mincraft mc.hypixel.net 1.21.4 --ign FuriousDestroyer --email you@example.com
 $ mincraft mythic.gg 1.7.10 -p 58585 --ign MangoSyrup --email you@example.com --prox proxy.com:1234:mango:secret
+$ mincraft mc.hypixel.net 1.21.4 --ign Player --email you@example.com --exec "{{1000}}.li{{2000}}\\nhello{{500}}\\n.lo"
 `,
 	);
 
@@ -69,15 +74,9 @@ program
 	.option("--verbose", "Enable additional logging messages")
 	.option(
 		"--exec <COMMANDS>",
-		'Execute REPL commands on startup, e.g. ".li\\nhello\\n.lo".',
+		'Execute REPL commands on startup with optional millisecond-based delays, e.g. "{{1000}}.li{{2000}}\\nhello{{500}}\\n.lo".',
 		(val: string, prev: string[]) => prev.concat(val),
 		[],
-	)
-	.option(
-		"--exec-delay <DELAY>",
-		"Timeout between exec commands in milliseconds",
-		(val) => parseInt(val, 10),
-		4000,
 	);
 
 program.action(async (_host, _version, options) => {
@@ -96,16 +95,40 @@ program.action(async (_host, _version, options) => {
 
 	const config = await getConfig(program);
 
-	const commands: string[] = [];
+	const commands: DelayableCommands = [];
 	for (const cmd of options.exec) {
-		commands.push(...cmd.split("\\n").filter(Boolean));
+		const parsed = parseExecCommands(cmd);
+		commands.push(...parsed);
 	}
-	await run(
-		config,
-		commands.length > 0 ? commands : undefined,
-		commands.length > 0 ? options.execDelay : undefined,
-	);
+	await run(config, commands.length > 0 ? commands : undefined);
 });
+
+function parseExecCommands(input: string) {
+	const result: DelayableCommands = [];
+	const lines = input.split("\\n").filter(Boolean);
+
+	for (const line of lines) {
+		const initialDelayMatch = line.match(/^\{\{(\d+)\}\}/);
+		if (initialDelayMatch) {
+			const initialDelay = parseInt(initialDelayMatch[1], 10);
+			result.push({ command: "", delay: initialDelay });
+		}
+
+		const lineWithoutInitial = line.replace(/^\{\{\d+\}\}/, "");
+		if (lineWithoutInitial) {
+			const trailingDelayMatch = lineWithoutInitial.match(/\{\{(\d+)\}\}$/);
+			if (trailingDelayMatch) {
+				const delay = parseInt(trailingDelayMatch[1], 10);
+				const command = lineWithoutInitial.replace(/\{\{\d+\}\}$/, "");
+				result.push({ command, delay });
+			} else {
+				result.push({ command: lineWithoutInitial, delay: 0 });
+			}
+		}
+	}
+
+	return result;
+}
 
 async function getIGN(uuid: string) {
 	const res = await fetch(

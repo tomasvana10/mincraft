@@ -1,5 +1,5 @@
 # mincraft
-Mineflayer CLI tool with supports for macros and proxies
+Mineflayer CLI tool with support for macros and proxies
 
 ## Usage
 ```

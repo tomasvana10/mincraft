@@ -1,5 +1,5 @@
 import * as readline from "node:readline";
-import type { Config } from "@mincraft/types";
+import type { Config, DelayableCommands } from "@mincraft/types";
 import { BotClient } from "./bot";
 import { createLogger } from "./logger";
 import { loadAndRunMacro } from "./macro";
@@ -15,8 +15,8 @@ function isCommand(value: string) {
 	return Object.values(BotCommand).some((cmd) => value.startsWith(cmd));
 }
 
-export async function run(config: Config, commands?: string[], commandExecDelay?: number) {
-	let bot: BotClient | null = null;
+export async function run(config: Config, commands?: DelayableCommands) {
+	let bot: BotClient = null;
 
 	const rl = readline.createInterface({
 		input: process.stdin,
@@ -105,13 +105,17 @@ export async function run(config: Config, commands?: string[], commandExecDelay?
 	console.log("input .exit to exit the REPL");
 
 	if (commands && commands.length > 0) {
-		for (const cmd of commands) {
-			logger.raw(`> ${cmd}`);
-			const shouldExit = await handleInput(cmd);
-			if (shouldExit) {
-				process.exit(0);
+		for (const { command, delay } of commands) {
+			if (command) {
+				logger.raw(`> ${command}`);
+				const shouldExit = await handleInput(command);
+				if (shouldExit) {
+					process.exit(0);
+				}
 			}
-			await new Promise((resolve) => setTimeout(resolve, commandExecDelay));
+			if (delay > 0) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
 		}
 	}
 

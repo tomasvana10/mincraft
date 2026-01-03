@@ -12,7 +12,11 @@ catalogs:
 
 importers:
 
-  .: {}
+  .:
+    devDependencies:
+      '@mincraft/types':
+        specifier: ^1.2.0
+        version: 1.2.0(mineflayer@4.33.0)(socks@2.8.7)
 
   packages/cli:
     dependencies:
@@ -366,6 +370,12 @@ packages:
 
   '@jridgewell/trace-mapping@0.3.31':
     resolution: {integrity: sha512-zzNR+SdQSDJzc8joaeP8QQoCQr8NuYx2dIIytl1QeBEZHJ9uW6hebsrYgbz8hJwUQao3TWCMtmfV8Nu1twOLAw==}
+
+  '@mincraft/types@1.2.0':
+    resolution: {integrity: sha512-6bCnc+CuO8XLjCpbzPJm225RtL9DqhNf91Z3pjb/4C3kBnQgncL0WQUAHET21rTtyue9dUGeODksW6gPM01BZQ==}
+    peerDependencies:
+      mineflayer: ^4.0.0
+      socks: ^2.8.7
 
   '@rollup/rollup-android-arm-eabi@4.54.0':
     resolution: {integrity: sha512-OywsdRHrFvCdvsewAInDKCNyR3laPA2mc9bRYJ6LBp5IyvF3fvXbbNR0bSzHlZVFtn6E0xw2oZlyjg4rKCVcng==}
@@ -1269,6 +1279,11 @@ snapshots:
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.5.5
+
+  '@mincraft/types@1.2.0(mineflayer@4.33.0)(socks@2.8.7)':
+    dependencies:
+      mineflayer: 4.33.0
+      socks: 2.8.7
 
   '@rollup/rollup-android-arm-eabi@4.54.0':
     optional: true

@@ -15,5 +15,8 @@
 	"bugs": {
 		"url": "https://github.com/tomasvana10/mincraft/issues"
 	},
-	"homepage": "https://github.com/tomasvana10/mincraft#readme"
+	"homepage": "https://github.com/tomasvana10/mincraft#readme",
+	"devDependencies": {
+		"@mincraft/types": "^1.2.0"
+	}
 }
