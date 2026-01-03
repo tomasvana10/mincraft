@@ -26,13 +26,13 @@ jobs:
 
       - run: pnpm run build
 
-      - name: Publish @mclogin/types
+      - name: Publish @mincraft/types
         working-directory: packages/types
         run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish mclogin
+      - name: Publish mincraft
         run: pnpm publish --no-git-checks --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
