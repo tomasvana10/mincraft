@@ -1,6 +1,6 @@
 {
 	"name": "mincraft",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"description": "Mineflayer CLI tool with supports for macros and proxies",
 	"bin": {
 		"mincraft": "./dist/index.mjs"
