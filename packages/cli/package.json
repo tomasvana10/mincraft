@@ -1,0 +1,42 @@
+{
+	"name": "@mincraft/cli",
+	"version": "1.0.2",
+	"description": "Mineflayer CLI tool with supports for macros and proxies",
+	"bin": {
+		"mincraft": "./dist/index.mjs"
+	},
+	"scripts": {
+		"dev": "tsup src/index.ts --watch",
+		"build": "tsup"
+	},
+	"keywords": [
+		"minecraft",
+		"mineflayer",
+		"cli",
+		"macros"
+	],
+	"author": "Tomas Vana",
+	"license": "MIT",
+	"packageManager": "pnpm@10.26.2",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/tomasvana10/mincraft.git"
+	},
+	"bugs": {
+		"url": "https://github.com/tomasvana10/mincraft/issues"
+	},
+	"homepage": "https://github.com/tomasvana10/mincraft#readme",
+	"dependencies": {
+		"@inquirer/prompts": "^8.1.0",
+		"@mincraft/types": "workspace:*",
+		"commander": "^14.0.2",
+		"esbuild": "^0.27.2",
+		"mineflayer": "^4.33.0",
+		"socks": "catalog:"
+	},
+	"devDependencies": {
+		"@types/debug": "^4.1.12",
+		"@types/node": "^25.0.3",
+		"tsup": "^8.5.1"
+	}
+}

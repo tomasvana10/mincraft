@@ -1,7 +1,7 @@
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import type { MacroContext, MacroModule } from "@mincraft/types";
 import * as esbuild from "esbuild";
-import type { MacroContext, MacroModule } from "../packages/types";
 
 async function compileToJS(filepath: string) {
 	const result = await esbuild.build({

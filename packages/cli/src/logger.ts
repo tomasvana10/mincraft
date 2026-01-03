@@ -1,5 +1,5 @@
 import * as readline from "node:readline";
-import type { Logger } from "../packages/types";
+import type { Logger } from "@mincraft/types";
 
 export function createLogger(rl?: readline.Interface): Logger {
 	const format = (msg: string, scope = "") =>

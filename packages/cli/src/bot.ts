@@ -1,6 +1,6 @@
+import type { Config, Logger } from "@mincraft/types";
 import { type Bot, type BotOptions, createBot } from "mineflayer";
 import { SocksClient } from "socks";
-import type { Config, Logger } from "../packages/types";
 
 export class BotClient {
 	public proxy: Config["proxy"];
