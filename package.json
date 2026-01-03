@@ -4,5 +4,16 @@
 	"scripts": {
 		"build": "pnpm -r build",
 		"publish-all": "pnpm -r publish --no-git-checks --access public"
-	}
+	},
+	"author": "Tomas Vana",
+	"license": "MIT",
+	"packageManager": "pnpm@10.26.2",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/tomasvana10/mincraft.git"
+	},
+	"bugs": {
+		"url": "https://github.com/tomasvana10/mincraft/issues"
+	},
+	"homepage": "https://github.com/tomasvana10/mincraft#readme"
 }
