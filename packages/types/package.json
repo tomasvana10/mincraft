@@ -1,0 +1,31 @@
+{
+	"name": "@mincraft/types",
+	"version": "1.0.0",
+	"description": "Type definitions for mincraft macros",
+	"types": "./index.d.ts",
+	"exports": {
+		".": {
+			"types": "./index.d.ts"
+		}
+	},
+	"files": [
+		"index.d.ts"
+	],
+	"peerDependencies": {
+		"mineflayer": "^4.0.0",
+		"socks": "catalog:"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/tomasvana10/mincraft.git",
+		"directory": "packages/types"
+	},
+	"bugs": {
+		"url": "https://github.com/tomasvana10/mincraft/issues"
+	},
+	"homepage": "https://github.com/tomasvana10/mincraft#readme"
+}
