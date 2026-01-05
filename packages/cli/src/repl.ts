@@ -1,10 +1,10 @@
 import * as readline from "node:readline";
 import type { Config, DelayableCommands } from "@mincraft/types";
 import chalk from "chalk";
-import { version } from ".";
 import { BotClient } from "./bot";
 import { createLogger } from "./logger";
 import { loadAndRunMacro } from "./macro";
+import { version } from "./version";
 
 export enum BotCommand {
 	Exit = ".exit",
