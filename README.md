@@ -22,11 +22,15 @@ Options:
   --auth <AUTH>                 Account authentication method (default: "microsoft")
   --no-log-messages             Do not log messages your client receives
   --verbose                     Enable additional logging messages
-  --exec <COMMANDS>             Execute REPL commands on startup with optional millisecond-based delays, e.g. "{{1000}}.li{{2000}}\nhello{{500}}\n.lo". (default: [])
+  --exec <COMMANDS>             Execute REPL commands on startup with optional delays, e.g. "{{1}},.li,{{2.5}},hello,{{0.5}},.lo",
+                                where {{N}} represents a delay. You can escape curly braces and commas to include them in
+                                commands/messages. (default: [])
   -h, --help                    display help for command
 
 Examples:
 $ mincraft mc.hypixel.net 1.21.4 --ign FuriousDestroyer --email you@example.com
 $ mincraft mythic.gg 1.7.10 -p 58585 --ign MangoSyrup --email you@example.com --prox proxy.com:1234:mango:secret
-$ mincraft mc.hypixel.net 1.21.4 --ign Player --email you@example.com --exec "{{1000}}.li{{2000}}\nhello{{500}}\n.lo --verbose"
+$ mincraft mc.hypixel.net 1.21.4 --ign Player --email you@example.com --exec "{{1}},.li,{{2.5}},hello,{{0.5}},.lo"
+$ mincraft mc.hypixel.net 1.21.4 --ign Player --email you@example.com --exec "{{1.5}},.li,{{5}},hello\,world,{{0.5}},.lo"
+
 ```
