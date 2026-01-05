@@ -4,6 +4,7 @@ import type {
 	ProxyCredentials,
 } from "@mincraft/types";
 import { type Command, Option, program } from "commander";
+import { version } from ".";
 import { parseExecCommands } from "./exec";
 import { run } from "./repl";
 
@@ -11,7 +12,7 @@ import { run } from "./repl";
 program
 	.name("mincraft")
 	.description("Mineflayer CLI tool with supports for macros and proxies.")
-	.version("1.0.0")
+	.version(version)
 	.addHelpText(
 		"after",
 		`
