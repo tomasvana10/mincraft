@@ -1,6 +1,6 @@
 {
 	"name": "@mincraft/cli",
-	"version": "1.4.0",
+	"version": "1.5.0",
 	"description": "Mineflayer CLI tool with support for macros and proxies",
 	"bin": {
 		"mincraft": "./dist/index.mjs"
