@@ -3,3 +3,4 @@ packages:
 
 catalog: 
   socks: "^2.8.7"
+  mineflayer: "^4.33.0"

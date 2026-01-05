@@ -1,17 +1,18 @@
 import * as readline from "node:readline";
 import type { Logger } from "@mincraft/types";
-
-const GRAY = "\x1b[90m";
-const BLUE = "\x1b[34m";
-const RESET = "\x1b[0m";
+import chalk from "chalk";
 
 function formatScope(fullScope: string) {
 	if (!fullScope) return "";
 
 	const parts = fullScope.split("/");
 	const colored = parts.map((part, i) => {
-		if (i === 0) return `${GRAY}${part}${RESET}`;
-		return `${BLUE}${part}${RESET}`;
+		if (i === 0) {
+			if (part === "err") return chalk.red(part);
+			if (part === "warn") return chalk.yellow(part);
+			return chalk.gray(part);
+		}
+		return chalk.blue(part);
 	});
 
 	return `/${colored.join("/")}`;

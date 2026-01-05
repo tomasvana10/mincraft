@@ -1,5 +1,7 @@
 import * as readline from "node:readline";
 import type { Config, DelayableCommands } from "@mincraft/types";
+import chalk from "chalk";
+import { version } from ".";
 import { BotClient } from "./bot";
 import { createLogger } from "./logger";
 import { loadAndRunMacro } from "./macro";
@@ -9,13 +11,24 @@ export enum BotCommand {
 	Logout = ".lo",
 	Login = ".li",
 	Macro = ".macro",
+	Help = ".help",
 }
 
 function isCommand(value: string) {
 	return Object.values(BotCommand).some((cmd) => value.startsWith(cmd));
 }
 
+function showReplHelp(log: (msg: string) => void, serverHost: string) {
+	log(`type ${chalk.magenta(".li")} to log in to ${serverHost}`);
+	log(`type ${chalk.magenta(".lo")} to log out from ${serverHost}`);
+	log(`type ${chalk.magenta(".macro <filepath>")} to run a macro`);
+	log(`type ${chalk.magenta(".help")} to show this REPL reference`);
+	log(`type ${chalk.magenta(".exit")} to exit the REPL`);
+	log(`type ${chalk.bold("any other value")} to send a message to the server`);
+}
+
 export async function run(config: Config, commands?: DelayableCommands) {
+	process.stdout.write("\u001b[2J\u001b[2;0H");
 	let bot: BotClient = null;
 
 	const rl = readline.createInterface({
@@ -24,6 +37,7 @@ export async function run(config: Config, commands?: DelayableCommands) {
 	});
 
 	const logger = createLogger(rl);
+	const helpLogger = (msg: string) => logger.raw(`>> ${msg}`);
 
 	rl.setPrompt("> ");
 
@@ -35,7 +49,7 @@ export async function run(config: Config, commands?: DelayableCommands) {
 		}
 
 		if (!isCommand(input) && !bot?.isLoggedIn) {
-			logger.raw("log in using .li before sending messages");
+			logger.error("log in using .li before sending messages");
 			return false;
 		}
 
@@ -81,6 +95,10 @@ export async function run(config: Config, commands?: DelayableCommands) {
 					}
 					break;
 				}
+				case BotCommand.Help: {
+					showReplHelp(helpLogger, config.server.host);
+					break;
+				}
 			}
 		} else {
 			bot?.sendMessage(input);
@@ -97,24 +115,20 @@ export async function run(config: Config, commands?: DelayableCommands) {
 		rl.prompt();
 	});
 
-	console.log("=== mincraft REPL ===");
-	console.log("input plain text to send a message to the server");
-	console.log(`input .li to log in to ${config.server.host}`);
-	console.log(`input .lo to log out from ${config.server.host}`);
-	console.log("input .macro <filepath> to run a macro");
-	console.log("input .exit to exit the REPL");
+	console.log(chalk.green(`mincraft REPL ${version}`));
+	helpLogger('type ".help" for more information.');
 
 	if (commands && commands.length > 0) {
 		for (const { command, delay } of commands) {
+			if (delay > 0) {
+				await new Promise((resolve) => setTimeout(resolve, delay));
+			}
 			if (command) {
 				logger.raw(`> ${command}`);
 				const shouldExit = await handleInput(command);
 				if (shouldExit) {
 					process.exit(0);
 				}
-			}
-			if (delay > 0) {
-				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}
 	}

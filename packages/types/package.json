@@ -11,8 +11,8 @@
 	"files": [
 		"index.d.ts"
 	],
-	"peerDependencies": {
-		"mineflayer": "^4.0.0",
+	"dependencies": {
+		"mineflayer": "catalog:",
 		"socks": "catalog:"
 	}
 }
