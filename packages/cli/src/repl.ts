@@ -1,34 +1,55 @@
 import * as readline from "node:readline";
 import type { Config, DelayableCommands } from "@mincraft/types";
 import chalk from "chalk";
+import type { LiteralStringUnion } from ".";
 import { BotClient } from "./bot";
 import { createLogger } from "./logger";
 import { loadAndRunMacro } from "./macro";
 import { version } from "./version";
 
-export enum BotCommand {
+export enum ReplCommand {
 	Exit = ".exit",
 	Logout = ".lo",
 	Login = ".li",
 	Macro = ".macro",
+	Clear = ".cls",
 	Help = ".help",
 }
 
-function isCommand(value: string) {
-	return Object.values(BotCommand).some((cmd) => value.startsWith(cmd));
+function isReplCommand(value: string) {
+	return Object.values(ReplCommand).some((cmd) => value.startsWith(cmd));
+}
+
+function clearRepl() {
+	process.stdout.write("\u001b[2J\u001b[2;0H");
+}
+
+function describeReplCommand(
+	log: (msg: string) => void,
+	command: LiteralStringUnion<ReplCommand>,
+	description: string,
+	args?: string[],
+) {
+	const argstr = args ? ` ${args.map((arg) => `<${arg}>`).join(" ")}` : "";
+	log(`type ${chalk.magenta(`${command}${argstr}`)} ${description}`);
 }
 
 function showReplHelp(log: (msg: string) => void, serverHost: string) {
-	log(`type ${chalk.magenta(".li")} to log in to ${serverHost}`);
-	log(`type ${chalk.magenta(".lo")} to log out from ${serverHost}`);
-	log(`type ${chalk.magenta(".macro <filepath>")} to run a macro`);
-	log(`type ${chalk.magenta(".help")} to show this REPL reference`);
-	log(`type ${chalk.magenta(".exit")} to exit the REPL`);
-	log(`type ${chalk.bold("any other value")} to send a message to the server`);
+	describeReplCommand(log, ReplCommand.Login, `to log in to ${serverHost}`);
+	describeReplCommand(log, ReplCommand.Logout, `to log out from ${serverHost}`);
+	describeReplCommand(log, ReplCommand.Macro, "to run a macro", ["filepath"]);
+	describeReplCommand(log, ReplCommand.Clear, "to clear the REPL history");
+	describeReplCommand(log, ReplCommand.Exit, "to exit the REPL");
+	describeReplCommand(log, ReplCommand.Help, "to show this documentation");
+	describeReplCommand(
+		log,
+		"any other value",
+		"to send a message to the server",
+	);
 }
 
 export async function run(config: Config, commands?: DelayableCommands) {
-	process.stdout.write("\u001b[2J\u001b[2;0H");
+	clearRepl();
 	let bot: BotClient = null;
 
 	const rl = readline.createInterface({
@@ -37,7 +58,7 @@ export async function run(config: Config, commands?: DelayableCommands) {
 	});
 
 	const logger = createLogger(rl);
-	const helpLogger = (msg: string) => logger.raw(`>> ${msg}`);
+	const logHelp = (msg: string) => logger.raw(`>> ${msg}`);
 
 	rl.setPrompt("> ");
 
@@ -48,21 +69,21 @@ export async function run(config: Config, commands?: DelayableCommands) {
 			return false;
 		}
 
-		if (!isCommand(input) && !bot?.isLoggedIn) {
+		if (!isReplCommand(input) && !bot?.isLoggedIn) {
 			logger.error("log in using .li before sending messages");
 			return false;
 		}
 
-		if (isCommand(input)) {
+		if (isReplCommand(input)) {
 			const [cmd, ...args] = input.split(" ");
 
 			switch (cmd) {
-				case BotCommand.Exit: {
+				case ReplCommand.Exit: {
 					bot?.disconnect();
 					rl.close();
 					return true;
 				}
-				case BotCommand.Login: {
+				case ReplCommand.Login: {
 					if (bot?.isLoggedIn) {
 						logger.error("client is already logged in");
 					} else {
@@ -71,7 +92,7 @@ export async function run(config: Config, commands?: DelayableCommands) {
 					}
 					break;
 				}
-				case BotCommand.Logout: {
+				case ReplCommand.Logout: {
 					if (!bot?.isLoggedIn) {
 						logger.error("client isn't logged in");
 					} else {
@@ -79,7 +100,7 @@ export async function run(config: Config, commands?: DelayableCommands) {
 					}
 					break;
 				}
-				case BotCommand.Macro: {
+				case ReplCommand.Macro: {
 					if (!bot?.isLoggedIn) {
 						logger.error("client must be logged in to run macros");
 						break;
@@ -95,8 +116,12 @@ export async function run(config: Config, commands?: DelayableCommands) {
 					}
 					break;
 				}
-				case BotCommand.Help: {
-					showReplHelp(helpLogger, config.server.host);
+				case ReplCommand.Help: {
+					showReplHelp(logHelp, config.server.host);
+					break;
+				}
+				case ReplCommand.Clear: {
+					clearRepl();
 					break;
 				}
 			}
@@ -116,7 +141,7 @@ export async function run(config: Config, commands?: DelayableCommands) {
 	});
 
 	console.log(chalk.green(`mincraft REPL ${version}`));
-	helpLogger('type ".help" for more information.');
+	logHelp('type ".help" for more information.');
 
 	if (commands && commands.length > 0) {
 		for (const { command, delay } of commands) {

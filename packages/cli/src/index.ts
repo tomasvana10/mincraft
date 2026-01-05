@@ -6,4 +6,6 @@ export const log = defaultLogger.log;
 export const warn = defaultLogger.warn;
 export const error = defaultLogger.error;
 
+export type LiteralStringUnion<T> = T | (string & { _?: never });
+
 program.parse();
