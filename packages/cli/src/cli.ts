@@ -176,7 +176,7 @@ async function getConfig(p: Command): Promise<Config> {
 				}
 			: {}),
 		options: {
-			logMessages: opts.noLogMessages ?? true,
+			logMessages: opts.logMessages ?? true,
 			verboseLogging: opts.verbose ?? false,
 		},
 	};
