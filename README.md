@@ -1,6 +1,10 @@
 # mincraft
 Mineflayer CLI tool with support for macros and proxies
 
+## Installation
+`npm i @mincraft/cli`
+`pnpm i @mincraft/cli`
+
 ## Usage
 ```
 mincraft [options] <host> <version>
